@@ -45,11 +45,11 @@ The application will be available at: http://localhost:3000
 Here are the main scripts available in this project:
 
 Command	Description
-npm run dev	Starts the development server
-npm run build	Creates a production build
-npm run start	Starts the application in production mode
-npm run lint	Runs ESLint to check for code issues
-npm run format	Formats code using Prettier
+- npm run dev: Starts the development server
+- npm run build: Creates a production build
+- npm run start: Starts the application in production mode
+- npm run lint:	Runs ESLint: to check for code issues
+- npm run format: Formats code using Prettier
 
 
 ✨ Technologies Used
