@@ -1,101 +1,129 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect, Suspense } from "react";
+import Link from "next/link";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  interface Make {
+    MakeId: number;
+    MakeName: string;
+    LogoUrl: string;
+  }
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const [makes, setMakes] = useState<Make[]>([]);
+  const [years, setYears] = useState<number[]>([]);
+  const [selectedMake, setSelectedMake] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+
+  const carBrands = [
+    { LogoUrl: "/images/car-logo-1.svg", MakeName: "Tesla" },
+    { LogoUrl: "/images/car-logo-2.svg", MakeName: "BMW" },
+    { LogoUrl: "/images/car-logo-3.svg", MakeName: "Jaguar" },
+    { LogoUrl: "/images/car-logo-4.svg", MakeName: "Ford" },
+    { LogoUrl: "/images/car-logo-5.svg", MakeName: "Kia" },
+    { LogoUrl: "/images/car-logo-6.svg", MakeName: "Nissan" },
+    { LogoUrl: "/images/car-logo-7.svg", MakeName: "Toyota" },
+    { LogoUrl: "/images/car-logo-8.svg", MakeName: "Rolls-Royce" },
+    { LogoUrl: "/images/car-logo-9.svg", MakeName: "Mercedes-Benz" },
+    { LogoUrl: "/images/car-logo-10.svg", MakeName: "Fiat" },
+    { LogoUrl: "/images/car-logo-11.svg", MakeName: "Bugatti" },
+    { LogoUrl: "/images/car-logo-12.svg", MakeName: "Aston Martin" },
+  ];
+
+  useEffect(() => {
+    async function fetchMakes() {
+      try {
+        const response = await fetch(
+          "https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json"
+        );
+        const data = await response.json();
+
+        const makesWithLogos = data.Results.map((make: any) => {
+          const formattedMakeName = make.MakeName.replace(/ /g, "_");
+          const logoUrl = `/images/${formattedMakeName.toLowerCase()}-logo.png`;
+
+          return {
+            ...make,
+            LogoUrl: logoUrl,
+          };
+        });
+
+        setMakes(makesWithLogos || []);
+      } catch (error) {
+        console.error("Erro ao buscar marcas de veículos:", error);
+      }
+    }
+
+    const currentYear = new Date().getFullYear();
+    setYears(
+      Array.from({ length: currentYear - 2015 + 1 }, (_, index) => 2015 + index)
+    );
+
+    fetchMakes();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+      <h1 className="text-2xl font-bold mb-6 text-black">Find your dream car!</h1>
+
+      <div className="w-full max-w-md bg-white p-6 rounded shadow">
+        <Suspense fallback={<p className="text-black">Loading...</p>}>
+          <select
+            id="make"
+            className="mb-4 block w-full p-2 border border-gray-300 rounded text-black"
+            value={selectedMake ?? ""}
+            onChange={(e) => setSelectedMake(Number(e.target.value))}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <option value="">Select a make</option>
+            {makes.map((make) => (
+              <option key={make.MakeId} value={make.MakeId}>
+                {make.MakeName}
+              </option>
+            ))}
+          </select>
+        </Suspense>
+        <Suspense fallback={<p className="text-black">Loading...</p>}>
+          <select
+            id="year"
+            className="mt-1 block w-full p-2 border border-gray-300 rounded text-black"
+            value={selectedYear ?? ""}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <option value="">Select a year</option>
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </Suspense>
+        <div className="mt-6"> {selectedMake && selectedYear ? ( <Link href={`/result/${selectedMake}/${selectedYear}`} className="w-full py-2 px-4 rounded text-white bg-blue-500 hover:bg-blue-600 block text-center" > Próximo </Link> ) : ( <button disabled className="w-full py-2 px-4 rounded text-white bg-gray-400 cursor-not-allowed block text-center" > Próximo </button> )} </div>
+
+      </div>
+      <div className="w-full max-w-5xl mt-12 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6">
+        {carBrands.map((brand, index) => (
+          <div
+            key={index}
+            className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <div className="h-16 w-16 mb-2 flex items-center justify-center bg-gray-200 rounded-full">
+              <Image
+                src={brand.LogoUrl || "/images/car-placeholder.svg"} 
+                alt={brand.MakeName}
+                width={48}
+                height={48}
+                onError={(e) => {
+                  e.currentTarget.src = "/images/car-placeholder.svg";
+                }}
+              />
+            </div>
+            <p className="text-sm font-medium text-gray-700 text-center">
+              {brand.MakeName}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
