@@ -98,7 +98,7 @@ export default function Home() {
             ))}
           </select>
         </Suspense>
-        <div className="mt-6"> {selectedMake && selectedYear ? ( <Link href={`/result/${selectedMake}/${selectedYear}`} className="w-full py-2 px-4 rounded text-white bg-blue-500 hover:bg-blue-600 block text-center" > Próximo </Link> ) : ( <button disabled className="w-full py-2 px-4 rounded text-white bg-gray-400 cursor-not-allowed block text-center" > Próximo </button> )} </div>
+        <div className="mt-6"> {selectedMake && selectedYear ? ( <Link href={`/result/${selectedMake}/${selectedYear}`} className="w-full py-2 px-4 rounded text-white bg-blue-500 hover:bg-blue-600 block text-center" > Próximo </Link> ) : ( <button disabled className="w-full py-2 px-4 rounded text-white bg-gray-400 cursor-not-allowed block text-center" > Search </button> )} </div>
 
       </div>
       <div className="w-full max-w-5xl mt-12 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6">
